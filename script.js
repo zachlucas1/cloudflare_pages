@@ -13,19 +13,21 @@ async function getRandomImage() {
         const data = await response.json();
 
         const url = data.message;
+        console.log("Image URL:", url);
+
+        // Set image source
         document.getElementById('dogImage1').src = url;
 
-        console.log("Image URL:", url); // ← Add this to inspect in dev tools
-
+        // Extract breed or sub-breed from URL
         let breedName = "Unknown Breed";
-        const regex = /breeds\/([^\/]+)\/([^\/]+\.jpg)/;
+        const match = url.match(/breeds\/([^\/]+)\//i);
 
-        // Match standard breed/sub-breed path
-        const match = url.match(/breeds\/([a-z\-]+)(?:\/[a-z\-]+)?\//i);
         if (match && match[1]) {
+            // Handles cases like "spaniel-brittany"
             breedName = match[1]
-                .replace('-', ' ')
-                .replace(/\b\w/g, l => l.toUpperCase());
+                .split('-')
+                .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+                .join(' ');
         }
 
         document.getElementById('breedName').innerText = `Breed: ${breedName}`;
@@ -34,4 +36,3 @@ async function getRandomImage() {
         document.getElementById('breedName').innerText = `Breed: Error loading`;
     }
 }
-
