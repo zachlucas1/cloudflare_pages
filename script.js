@@ -7,36 +7,31 @@ function httpGet(theUrl) {
 }
 
 // gets a random image from this API
-function getRandomImage() {
-    // get the json from the API
-    var json = httpGet('https://dog.ceo/api/breeds/image/random');
-    console.log(json);
+async function getRandomImage() {
+    try {
+        const response = await fetch('https://dog.ceo/api/breeds/image/random');
+        const data = await response.json();
 
-    // parse the JSON response
-    var array = JSON.parse(json);
-    console.log(array);
+        const url = data.message;
+        document.getElementById('dogImage1').src = url;
 
-    // get the image URL
-    var url = array.message;
-    console.log(url);
+        console.log("Image URL:", url); // ← Add this to inspect in dev tools
 
-    // update the image
-    var image = document.getElementById('dogImage1');
-    image.src = url;
+        let breedName = "Unknown Breed";
+        const regex = /breeds\/([^\/]+)\/([^\/]+\.jpg)/;
 
-    // extract the breed from the URL
-    var breedMatch = url.match(/breeds\/([^\/]+)\//);
-    var breedName = "Unknown Breed";
+        // Match standard breed/sub-breed path
+        const match = url.match(/breeds\/([a-z\-]+)(?:\/[a-z\-]+)?\//i);
+        if (match && match[1]) {
+            breedName = match[1]
+                .replace('-', ' ')
+                .replace(/\b\w/g, l => l.toUpperCase());
+        }
 
-    if (breedMatch && breedMatch[1]) {
-        breedName = breedMatch[1]
-            .replace('-', ' ')                     // Replace hyphens with spaces
-            .replace(/\b\w/g, c => c.toUpperCase()); // Capitalize each word
-    }
-
-    // update the breed name in the DOM
-    var breedElement = document.getElementById('breedName');
-    if (breedElement) {
-        breedElement.innerText = `Breed: ${breedName}`;
+        document.getElementById('breedName').innerText = `Breed: ${breedName}`;
+    } catch (error) {
+        console.error('Fetch error:', error);
+        document.getElementById('breedName').innerText = `Breed: Error loading`;
     }
 }
+
