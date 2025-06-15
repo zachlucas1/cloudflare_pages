@@ -13,7 +13,9 @@ async function getRandomImage() {
         const data = await response.json();
 
         const url = data.message;
-        console.log("Image URL:", url);
+        // --- START DEBUGGING LOGS ---
+        console.log("DEBUG: Image URL (from API response):", url);
+        // --- END DEBUGGING LOGS ---
 
         // Set image source
         document.getElementById('dogImage1').src = url;
@@ -22,12 +24,24 @@ async function getRandomImage() {
         let breedName = "Unknown Breed";
         const match = url.match(/breeds\/([^\/]+)\//i);
 
+        // --- START DEBUGGING LOGS ---
+        console.log("DEBUG: Result of regex match:", match);
+        if (match && match[1]) {
+            console.log("DEBUG: Matched breed part (match[1]):", match[1]);
+        } else {
+            console.log("DEBUG: Regex did NOT find a match or match[1] is undefined.");
+        }
+        // --- END DEBUGGING LOGS ---
+
         if (match && match[1]) {
             // Handles cases like "spaniel-brittany"
             breedName = match[1]
                 .split('-')
                 .map(part => part.charAt(0).toUpperCase() + part.slice(1))
                 .join(' ');
+            // --- START DEBUGGING LOGS ---
+            console.log("DEBUG: Final processed breedName:", breedName);
+            // --- END DEBUGGING LOGS ---
         }
 
         document.getElementById('breedName').innerText = `Breed: ${breedName}`;
